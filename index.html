@@ -10,27 +10,40 @@
 
     <!-- 2. Cargamos AR.js (realidad aumentada) -->
     <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.7/aframe/build/aframe-ar.js"></script>
+
+    <!-- 2.1 Cargamos el script para gestos (pellizcar para redimensionar) -->
+    <script src="https://raw.githack.com/fcor/aframe-gesture-detector-component/master/dist/aframe-gesture-detector.component.min.js"></script>
   </head>
 
   <body style="margin:0; overflow:hidden;">
 
-    <!-- 3. La escena AR -->
-    <a-scene embedded arjs>
+    <!-- 3. La escena AR con detector de gestos -->
+    <a-scene 
+      embedded 
+      arjs
+      gesture-detector>
 
       <a-assets>
         <!-- Cargamos el modelo GLTF (es más eficiente que OBJ) -->
         <a-asset-item id="casa" src="small_house._hut._barn/scene.gltf"></a-asset-item>
       </a-assets>
 
-      <!-- 4. El marcador: cuando la cámara lo ve, muestra lo que está adentro -->
-      <a-marker preset="hiro">
+      <!-- 4. El marcador con el componente para que los gestos funcionen aquí -->
+      <a-marker 
+        preset="hiro"
+        raycaster="objects: .clickable"
+        emitevents="true"
+        cursor="fuse: false; rayOrigin: mouse;">
 
-        <!-- 5. El objeto 3D: el modelo de la casa -->
+        <!-- 5. El objeto 3D con la clase clickable y el componente gesture-handler -->
         <a-entity
+          id="modelo-casa"
+          class="clickable"
           gltf-model="#casa"
           position="0 0 0"
-          scale="0.25 0.25 0.25"
+          scale="25 25 25"
           rotation="0 0 0"
+          gesture-handler
           animation="property: rotation;
                      to: 0 360 0;
                      loop: true;
