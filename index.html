@@ -54,11 +54,22 @@
         });
 
         joystick.on('move', (evt, data) => {
-          if (data.vector && data.vector.x) {
-            // Rotar basado en la inclinación horizontal del joystick
-            rotationY += data.vector.x * 5; 
+          if (data.vector) {
             const currentRot = model.getAttribute('rotation');
-            model.setAttribute('rotation', { x: currentRot.x, y: rotationY, z: currentRot.z });
+            
+            // Rotación horizontal (Y) - 360 grados
+            if (data.vector.x) {
+              rotationY += data.vector.x * 5;
+            }
+
+            // Rotación vertical (X) - Para ver todos los ángulos
+            let rotationX = currentRot.x;
+            if (data.vector.y) {
+              // Limitamos la rotación vertical para que no se de la vuelta completa y se pierda el frente
+              rotationX -= data.vector.y * 5; 
+            }
+
+            model.setAttribute('rotation', { x: rotationX, y: rotationY, z: currentRot.z });
           }
         });
       };
@@ -94,7 +105,7 @@
           class="clickable"
           gltf-model="#casa"
           position="0 0 0"
-          rotation="-270 0 90"
+          rotation="-270 -90 90"
           gesture-handler="minScale: 0.25; maxScale: 10"
           auto-scale>
         </a-entity>
