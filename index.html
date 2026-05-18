@@ -73,9 +73,9 @@
           if (data.vector && data.distance) {
             const currentRot = model.getAttribute('rotation');
             
-            // Sensibilidad aumentada: usamos el vector multiplicado por la intensidad (force)
-            // data.force suele ir de 0 a 1+, así que multiplicamos por un factor mayor
-            const sensitivity = 8; 
+            // Sensibilidad reducida para mayor control (menos DPI)
+            // Bajamos de 8 a 1.5 para un movimiento más suave y preciso
+            const sensitivity = 1.5; 
 
             // Rotación horizontal (Y)
             if (data.vector.x) {
@@ -124,7 +124,7 @@
           class="clickable"
           gltf-model="#casa"
           position="0 0 0"
-          rotation="-90 -90 0"
+          rotation="-90 180 0"
           gesture-handler="minScale: 0.25; maxScale: 10"
           auto-scale
           center-model>
