@@ -17,19 +17,25 @@
     <!-- 3. La escena AR -->
     <a-scene embedded arjs>
 
+      <a-assets>
+        <!-- Cargamos el modelo GLTF (es más eficiente que OBJ) -->
+        <a-asset-item id="casa" src="small_house._hut._barn/scene.gltf"></a-asset-item>
+      </a-assets>
+
       <!-- 4. El marcador: cuando la cámara lo ve, muestra lo que está adentro -->
       <a-marker preset="hiro">
 
-        <!-- 5. El objeto 3D: un cubo rojo -->
-        <a-box
-          position="0 0.5 0"
-          rotation="0 45 0"
-          color="#D85A30"
+        <!-- 5. El objeto 3D: el modelo de la casa -->
+        <a-entity
+          gltf-model="#casa"
+          position="0 0 0"
+          scale="0.005 0.005 0.005"
+          rotation="0 0 0"
           animation="property: rotation;
-                     to: 0 405 0;
+                     to: 0 360 0;
                      loop: true;
-                     dur: 3000">
-        </a-box>
+                     dur: 10000">
+        </a-entity>
 
       </a-marker>
 
