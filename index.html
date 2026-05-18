@@ -13,6 +13,29 @@
 
     <!-- 2.1 Cargamos el script para gestos (pellizcar para redimensionar) -->
     <script src="https://raw.githack.com/fcor/aframe-gesture-detector-component/master/dist/aframe-gesture-detector.component.min.js"></script>
+    <script src="https://raw.githack.com/fcor/aframe-gesture-handler-component/master/dist/aframe-gesture-handler.component.min.js"></script>
+
+    <script>
+      AFRAME.registerComponent('auto-scale', {
+        init: function () {
+          this.el.addEventListener('model-loaded', () => {
+            const obj = this.el.getObject3D('mesh');
+            if (!obj) return;
+
+            // Calculamos la caja que envuelve el modelo
+            const box = new THREE.Box3().setFromObject(obj);
+            const size = box.getSize(new THREE.Vector3());
+            
+            // Queremos que el lado más largo mida aproximadamente 1 unidad (tamaño del marcador)
+            const maxDim = Math.max(size.x, size.y, size.z);
+            if (maxDim > 0) {
+              const scale = 1.5 / maxDim; // 1.5 para que sobresalga un poco del marcador
+              this.el.setAttribute('scale', { x: scale, y: scale, z: scale });
+            }
+          });
+        }
+      });
+    </script>
   </head>
 
   <body style="margin:0; overflow:hidden;">
@@ -41,9 +64,9 @@
           class="clickable"
           gltf-model="#casa"
           position="0 0 0"
-          scale="0.05 0.05 0.05"
           rotation="0 0 0"
-          gesture-handler>
+          gesture-handler
+          auto-scale>
         </a-entity>
 
       </a-marker>
