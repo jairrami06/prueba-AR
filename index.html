@@ -35,10 +35,35 @@
           });
         }
       });
+
+      // Lógica para los botones de rotación
+      window.onload = function() {
+        const model = document.querySelector('#modelo-casa');
+        const btnLeft = document.querySelector('#rotate-left');
+        const btnRight = document.querySelector('#rotate-right');
+        let rotationY = 90;
+
+        btnLeft.addEventListener('click', () => {
+          rotationY -= 15;
+          const currentRot = model.getAttribute('rotation');
+          model.setAttribute('rotation', { x: currentRot.x, y: rotationY, z: currentRot.z });
+        });
+
+        btnRight.addEventListener('click', () => {
+          rotationY += 15;
+          const currentRot = model.getAttribute('rotation');
+          model.setAttribute('rotation', { x: currentRot.x, y: rotationY, z: currentRot.z });
+        });
+      };
     </script>
   </head>
 
   <body style="margin:0; overflow:hidden;">
+    <!-- Controles de rotación -->
+    <div style="position: fixed; bottom: 20px; width: 100%; text-align: center; z-index: 1000; display: flex; justify-content: center; gap: 10px;">
+      <button id="rotate-left" style="padding: 15px; background: rgba(0,0,0,0.5); color: white; border: 2px solid white; border-radius: 50%; width: 60px; height: 60px; font-size: 24px; cursor: pointer;">↺</button>
+      <button id="rotate-right" style="padding: 15px; background: rgba(0,0,0,0.5); color: white; border: 2px solid white; border-radius: 50%; width: 60px; height: 60px; font-size: 24px; cursor: pointer;">↻</button>
+    </div>
 
     <!-- 3. La escena AR con detector de gestos -->
     <a-scene 
@@ -65,7 +90,7 @@
           class="clickable"
           gltf-model="#casa"
           position="0 0 0"
-          rotation="-90 0 0"
+          rotation="-90 90 0"
           gesture-handler="minScale: 0.25; maxScale: 10"
           auto-scale>
         </a-entity>
