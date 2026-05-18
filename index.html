@@ -18,6 +18,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.10.1/nipplejs.min.js"></script>
 
     <script>
+      AFRAME.registerComponent('center-model', {
+        init: function () {
+          this.el.addEventListener('model-loaded', () => {
+            const mesh = this.el.getObject3D('mesh');
+            const box = new THREE.Box3().setFromObject(mesh);
+            const center = new THREE.Vector3();
+            box.getCenter(center);
+            
+            // Reposicionamos la malla interna para que el centro del objeto coincida con el 0,0,0 local
+            mesh.position.x += (mesh.position.x - center.x);
+            mesh.position.y += (mesh.position.y - center.y);
+            mesh.position.z += (mesh.position.z - center.z);
+          });
+        }
+      });
+
       AFRAME.registerComponent('auto-scale', {
         init: function () {
           this.el.addEventListener('model-loaded', () => {
@@ -54,19 +70,22 @@
         });
 
         joystick.on('move', (evt, data) => {
-          if (data.vector) {
+          if (data.vector && data.distance) {
             const currentRot = model.getAttribute('rotation');
             
-            // Rotación horizontal (Y) - 360 grados
+            // Sensibilidad aumentada: usamos el vector multiplicado por la intensidad (force)
+            // data.force suele ir de 0 a 1+, así que multiplicamos por un factor mayor
+            const sensitivity = 8; 
+
+            // Rotación horizontal (Y)
             if (data.vector.x) {
-              rotationY += data.vector.x * 5;
+              rotationY += data.vector.x * data.force * sensitivity;
             }
 
-            // Rotación vertical (X) - Para ver todos los ángulos
+            // Rotación vertical (X)
             let rotationX = currentRot.x;
             if (data.vector.y) {
-              // Limitamos la rotación vertical para que no se de la vuelta completa y se pierda el frente
-              rotationX -= data.vector.y * 5; 
+              rotationX -= data.vector.y * data.force * sensitivity; 
             }
 
             model.setAttribute('rotation', { x: rotationX, y: rotationY, z: currentRot.z });
@@ -105,9 +124,10 @@
           class="clickable"
           gltf-model="#casa"
           position="0 0 0"
-          rotation="-270 -90 90"
+          rotation="-90 -90 0"
           gesture-handler="minScale: 0.25; maxScale: 10"
-          auto-scale>
+          auto-scale
+          center-model>
         </a-entity>
 
       </a-marker>
