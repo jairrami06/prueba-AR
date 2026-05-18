@@ -22,14 +22,19 @@
         init: function () {
           this.el.addEventListener('model-loaded', () => {
             const mesh = this.el.getObject3D('mesh');
+            if (!mesh) return;
+
+            // Centramos la geometría para que el pivote de rotación sea el centro real
             const box = new THREE.Box3().setFromObject(mesh);
             const center = new THREE.Vector3();
             box.getCenter(center);
             
-            // Reposicionamos la malla interna para que el centro del objeto coincida con el 0,0,0 local
-            mesh.position.x += (mesh.position.x - center.x);
-            mesh.position.y += (mesh.position.y - center.y);
-            mesh.position.z += (mesh.position.z - center.z);
+            // En lugar de mover el mesh, movemos la geometría interna
+            mesh.traverse(function (node) {
+              if (node.isMesh) {
+                node.geometry.center();
+              }
+            });
           });
         }
       });
@@ -124,7 +129,7 @@
           class="clickable"
           gltf-model="#casa"
           position="0 0 0"
-          rotation="-180 -180 90"
+          rotation="-180 -90 90"
           gesture-handler="minScale: 0.25; maxScale: 10"
           auto-scale
           center-model>
