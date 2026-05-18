@@ -62,7 +62,7 @@
       // Lógica para el joystick de rotación
       window.onload = function() {
         const model = document.querySelector('#modelo-casa');
-        let rotationY = 90;
+        let rotationY = 0;
 
         // Crear contenedor para joystick
         const joystickContainer = document.querySelector('#joystick-container');
@@ -111,8 +111,8 @@
       gesture-detector>
 
       <a-assets>
-        <!-- Cargamos el modelo GLTF (es más eficiente que OBJ) -->
-        <a-asset-item id="casa" src="small_house._hut._barn/scene.gltf"></a-asset-item>
+        <!-- Cargamos el nuevo modelo forest_hut.glb -->
+        <a-asset-item id="casa" src="forest_hut.glb"></a-asset-item>
       </a-assets>
 
       <!-- 4. El marcador con el componente para que los gestos funcionen aquí -->
@@ -129,7 +129,7 @@
           class="clickable"
           gltf-model="#casa"
           position="0 0 0"
-          rotation="-180 -90 90"
+          rotation="0 0 0"
           gesture-handler="minScale: 0.25; maxScale: 10"
           auto-scale
           center-model>
