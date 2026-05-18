@@ -106,8 +106,9 @@
 
     <!-- 3. La escena AR con detector de gestos -->
     <a-scene 
-      embedded 
-      arjs
+      embedded
+      arjs="debugUIEnabled: false; logarithmicDepthBuffer: true;"
+      renderer="antialias: true; precision: medium; alpha: true; sortObjects: true;"
       gesture-detector>
 
       <a-assets>
