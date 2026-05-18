@@ -56,7 +56,8 @@
         preset="hiro"
         raycaster="objects: .clickable"
         emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;">
+        cursor="fuse: false; rayOrigin: mouse;"
+        id="marker">
 
         <!-- 5. El objeto 3D con la clase clickable y el componente gesture-handler -->
         <a-entity
@@ -64,8 +65,8 @@
           class="clickable"
           gltf-model="#casa"
           position="0 0 0"
-          rotation="0 0 0"
-          gesture-handler
+          rotation="-90 0 0"
+          gesture-handler="minScale: 0.25; maxScale: 10"
           auto-scale>
         </a-entity>
 
