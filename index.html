@@ -18,42 +18,31 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.10.1/nipplejs.min.js"></script>
 
     <script>
-      AFRAME.registerComponent('center-model', {
-        init: function () {
-          this.el.addEventListener('model-loaded', () => {
-            const mesh = this.el.getObject3D('mesh');
-            if (!mesh) return;
-
-            // Centramos la geometría para que el pivote de rotación sea el centro real
-            const box = new THREE.Box3().setFromObject(mesh);
-            const center = new THREE.Vector3();
-            box.getCenter(center);
-            
-            // En lugar de mover el mesh, movemos la geometría interna
-            mesh.traverse(function (node) {
-              if (node.isMesh) {
-                node.geometry.center();
-              }
-            });
-          });
-        }
-      });
-
-      AFRAME.registerComponent('auto-scale', {
+      AFRAME.registerComponent('adjust-model', {
         init: function () {
           this.el.addEventListener('model-loaded', () => {
             const obj = this.el.getObject3D('mesh');
             if (!obj) return;
 
-            // Calculamos la caja que envuelve el modelo
+            // 1. Calculamos el contenedor (bounding box) de todo el modelo
             const box = new THREE.Box3().setFromObject(obj);
-            const size = box.getSize(new THREE.Vector3());
-            
-            // Queremos que el lado más largo mida aproximadamente 1 unidad (tamaño del marcador)
+            const size = new THREE.Vector3();
+            box.getSize(size);
+            const center = new THREE.Vector3();
+            box.getCenter(center);
+
+            // 2. Corregimos la posición para que no aparezca "en otro lugar"
+            // Desplazamos el modelo interno para que su centro X,Z sea 0 
+            // y su base (min.y) esté exactamente sobre el marcador.
+            obj.position.x = -center.x;
+            obj.position.z = -center.z;
+            obj.position.y = -box.min.y; 
+
+            // 3. Auto-escala: Ajustamos el tamaño al marcador (aprox 1.5 unidades)
             const maxDim = Math.max(size.x, size.y, size.z);
             if (maxDim > 0) {
-              const scale = 1.5 / maxDim; // 1.5 para que sobresalga un poco del marcador
-              this.el.setAttribute('scale', { x: scale, y: scale, z: scale });
+              const scaleValue = 1.5 / maxDim;
+              this.el.setAttribute('scale', { x: scaleValue, y: scaleValue, z: scaleValue });
             }
           });
         }
@@ -62,7 +51,7 @@
       // Lógica para el joystick de rotación
       window.onload = function() {
         const model = document.querySelector('#modelo-casa');
-        let rotationY = 0;
+        let rotationY = 90;
 
         // Crear contenedor para joystick
         const joystickContainer = document.querySelector('#joystick-container');
@@ -101,6 +90,31 @@
   </head>
 
   <body style="margin:0; overflow:hidden;">
+    <!-- Overlay de texto informativo (oculto por defecto) -->
+    <div id="info-overlay" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); 
+        background-color: white; color: black; padding: 10px 20px; border-radius: 8px; 
+        font-family: Arial, sans-serif; font-weight: bold; font-size: 18px; 
+        z-index: 2000; box-shadow: 0px 4px 6px rgba(0,0,0,0.3); text-align: center; width: 80%;
+        display: none;">
+      Información del Objeto: Escultura Valdivia
+    </div>
+
+    <script>
+      // Lógica para mostrar/ocultar el texto al detectar el marcador
+      window.addEventListener('load', () => {
+        const marker = document.querySelector('#marker');
+        const infoOverlay = document.querySelector('#info-overlay');
+
+        marker.addEventListener('markerFound', () => {
+          infoOverlay.style.display = 'block';
+        });
+
+        marker.addEventListener('markerLost', () => {
+          infoOverlay.style.display = 'none';
+        });
+      });
+    </script>
+
     <!-- Contenedor del Joystick central -->
     <div id="joystick-container" style="position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%); width: 150px; height: 150px; z-index: 1000; pointer-events: auto;"></div>
 
@@ -129,10 +143,9 @@
           class="clickable"
           gltf-model="#casa"
           position="0 0 0"
-          rotation="0 0 0"
+          rotation="0 -90 90"
           gesture-handler="minScale: 0.25; maxScale: 10"
-          auto-scale
-          center-model>
+          adjust-model>
         </a-entity>
 
       </a-marker>
